@@ -1,0 +1,15 @@
+services:
+  app:
+    build: .
+    container_name: makuro-coming-soon
+    restart: unless-stopped
+    ports:
+      - "${APP_PORT:-3000}:3000"
+    volumes:
+      - waitlist-data:/app/data
+    environment:
+      - NODE_ENV=production
+      - DATA_DIR=/app/data
+
+volumes:
+  waitlist-data:
