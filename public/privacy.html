@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Privacy Policy — Makuro.io</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --blue: #4d96ff;
+    --blue-dark: #1a5fcf;
+    --blue-light: #e8f1ff;
+    --ink: #0f1117;
+    --ink-mid: #4a4f5e;
+    --ink-light: #9aa0b0;
+    --surface: #ffffff;
+    --surface-2: #f7f8fc;
+    --border: rgba(77,150,255,0.15);
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--surface);
+    color: var(--ink);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .bg-mesh {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    overflow: hidden;
+  }
+  .bg-mesh::before {
+    content: '';
+    position: absolute;
+    width: 800px; height: 800px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(77,150,255,0.08) 0%, transparent 70%);
+    top: -200px; right: -200px;
+    animation: drift 18s ease-in-out infinite alternate;
+  }
+  .bg-mesh::after {
+    content: '';
+    position: absolute;
+    width: 600px; height: 600px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(77,150,255,0.05) 0%, transparent 70%);
+    bottom: -100px; left: -150px;
+    animation: drift 22s ease-in-out infinite alternate-reverse;
+  }
+  @keyframes drift {
+    0% { transform: translate(0, 0) scale(1); }
+    100% { transform: translate(40px, 30px) scale(1.05); }
+  }
+
+  .page {
+    position: relative;
+    z-index: 1;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  nav {
+    padding: 2rem 3rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    animation: fadeDown 0.8s ease both;
+  }
+  .logo-wrap {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .logo-icon {
+    width: auto;
+    height: 44px;
+  }
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: var(--blue);
+    text-decoration: none;
+    transition: gap 0.2s ease;
+  }
+  .back-link:hover { gap: 10px; }
+  .back-link svg { width: 14px; height: 14px; }
+
+  .content {
+    flex: 1;
+    max-width: 720px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 2rem 2rem 4rem;
+    animation: fadeUp 0.8s 0.15s ease both;
+  }
+
+  .page-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(2rem, 4.5vw, 3rem);
+    font-weight: 400;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+    margin-bottom: 0.5rem;
+  }
+
+  .last-updated {
+    font-size: 0.82rem;
+    color: var(--ink-light);
+    margin-bottom: 2.5rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .last-updated::before {
+    content: '';
+    width: 20px;
+    height: 1px;
+    background: var(--blue);
+    opacity: 0.4;
+  }
+
+  .section {
+    margin-bottom: 2rem;
+  }
+
+  .section h2 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.25rem;
+    font-weight: 400;
+    color: var(--ink);
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .section p {
+    font-size: 0.92rem;
+    font-weight: 300;
+    color: var(--ink-mid);
+    line-height: 1.75;
+    margin-bottom: 0.75rem;
+  }
+
+  .section h3 {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: var(--ink);
+    margin-bottom: 0.5rem;
+    margin-top: 1rem;
+  }
+
+  .section ul {
+    list-style: none;
+    padding: 0;
+    margin-bottom: 0.75rem;
+  }
+
+  .section ul li {
+    font-size: 0.92rem;
+    font-weight: 300;
+    color: var(--ink-mid);
+    line-height: 1.75;
+    padding-left: 1.2rem;
+    position: relative;
+  }
+
+  .section ul li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.7em;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--blue);
+    opacity: 0.5;
+  }
+
+  .section strong {
+    font-weight: 500;
+    color: var(--ink);
+  }
+
+  .section a {
+    color: var(--blue);
+    text-decoration: none;
+    border-bottom: 1px solid rgba(77,150,255,0.3);
+    transition: border-color 0.2s ease;
+  }
+  .section a:hover { border-color: var(--blue); }
+
+  .highlight-box {
+    background: var(--blue-light);
+    border-left: 3px solid var(--blue);
+    border-radius: 0 10px 10px 0;
+    padding: 1rem 1.25rem;
+    margin: 1rem 0;
+  }
+  .highlight-box p {
+    margin-bottom: 0;
+    font-size: 0.88rem;
+  }
+  .highlight-box ul { margin-top: 0.5rem; }
+
+  .divider {
+    border: none;
+    height: 1px;
+    background: var(--border);
+    margin: 2rem 0;
+  }
+
+  footer {
+    padding: 1.8rem 3rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: fadeDown 0.8s 0.3s ease both;
+  }
+  .footer-copy {
+    font-size: 0.78rem;
+    color: var(--ink-light);
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeDown {
+    from { opacity: 0; transform: translateY(-12px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  @media (max-width: 640px) {
+    nav { padding: 1.5rem 1.25rem; }
+    .content { padding: 1.5rem 1.25rem 3rem; }
+    footer { padding: 1.5rem 1.25rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="bg-mesh"></div>
+
+<div class="page">
+
+  <nav>
+    <div class="logo-wrap">
+      <a href="/">
+        <img src="./logo.png" class="logo-icon" alt="Makuro Logo">
+      </a>
+    </div>
+    <a href="/" class="back-link">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13L5 8l5-5"/></svg>
+      Back to Home
+    </a>
+  </nav>
+
+  <div class="content">
+
+    <h1 class="page-title">Privacy Policy</h1>
+    <p class="last-updated">Last updated: April 30, 2026</p>
+
+    <div class="section">
+      <h2>1. Introduction</h2>
+      <p>makuro.io ("we," "our," or "us") provides an omnichannel messaging platform that allows users to connect multiple social media and communication platforms and respond to messages from a unified interface.</p>
+      <p>This Privacy Policy explains how we collect, use, and protect information, including message data, when you use our services.</p>
+    </div>
+
+    <hr class="divider">
+
+    <div class="section">
+      <h2>2. Information We Collect</h2>
+
+      <h3>a. Account Information</h3>
+      <ul>
+        <li>Name, email address, and login credentials</li>
+        <li>Account preferences and settings</li>
+      </ul>
+
+      <h3>b. Connected Platform Data</h3>
+      <p>When you connect third-party platforms (such as Facebook, Instagram, WhatsApp, or others), we may access:</p>
+      <ul>
+        <li>Public profile information (name, username, profile picture)</li>
+        <li>Page or account metadata</li>
+        <li>Messages and conversations (including message content, sender information, timestamps, and attachments where permitted)</li>
+      </ul>
+      <p>We only access this data based on the permissions you explicitly grant.</p>
+    </div>
+
+    <hr class="divider">
+
+    <div class="section">
+      <h2>3. How We Use Message Data</h2>
+      <p>Message and conversation data is used <strong>strictly for the purpose of providing core functionality</strong>, including:</p>
+      <ul>
+        <li>Displaying messages from connected platforms in a unified inbox</li>
+        <li>Enabling you to read and reply to messages</li>
+        <li>Synchronizing message status (e.g., read/unread)</li>
+        <li>Facilitating real-time communication across platforms</li>
+      </ul>
+
+      <div class="highlight-box">
+        <p><strong>We do not:</strong></p>
+        <ul>
+          <li>Use message content for advertising</li>
+          <li>Sell or share message data with third parties for marketing</li>
+          <li>Analyze message content beyond what is necessary to deliver the service</li>
+        </ul>
+      </div>
+    </div>
+
+    <hr class="divider">
+
+    <div class="section">
+      <h2>4. Data Storage and Processing</h2>
+      <ul>
+        <li>Messages may be temporarily processed and stored to enable delivery, synchronization, and performance optimization</li>
+        <li>We minimize storage duration and retain message data only as necessary to provide the service</li>
+        <li>Where possible, messages are fetched and displayed in real time without long-term storage</li>
+      </ul>
+    </div>
+
+    <hr class="divider">
+
+    <div class="section">
+      <h2>5. Sharing of Information</h2>
+      <p>We do not sell personal data.</p>
+      <p>We may share limited data with:</p>
+      <ul>
+        <li>Third-party platform APIs (e.g., Meta) to send and receive messages on your behalf</li>
+        <li>Infrastructure providers (hosting, databases) strictly for service operation</li>
+        <li>Legal authorities if required by law</li>
+      </ul>
+    </div>
+
+    <hr class="divider">
+
+    <div class="section">
+      <h2>6. Data Retention</h2>
+      <ul>
+        <li>Message data is retained only as long as necessary to provide messaging functionality</li>
+        <li>Users may disconnect accounts or request deletion of their data at any time</li>
+        <li>Upon disconnection, associated message data will be deleted or anonymized within a reasonable timeframe</li>
+      </ul>
+    </div>
+
+    <hr class="divider">
+
+    <div class="section">
+      <h2>7. Data Security</h2>
+      <p>We implement industry-standard security measures to protect message data and account information, including encryption in transit and access controls.</p>
+      <p>However, no system is completely secure.</p>
+    </div>
+
+    <hr class="divider">
+
+    <div class="section">
+      <h2>8. User Control and Rights</h2>
+      <p>You have control over your data:</p>
+      <ul>
+        <li>You can connect or disconnect platforms at any time</li>
+        <li>You can request deletion of your data</li>
+        <li>You can revoke permissions directly from the connected platform</li>
+      </ul>
+      <p>Contact: <a href="mailto:info@bdpl.com.np">info@bdpl.com.np</a></p>
+    </div>
+
+    <hr class="divider">
+
+    <div class="section">
+      <h2>9. Third-Party Platforms</h2>
+      <p>makuro.io integrates with third-party messaging platforms. Your use of those services is also subject to their respective privacy policies.</p>
+      <p>We only use data received from these platforms in accordance with their platform policies.</p>
+    </div>
+
+    <hr class="divider">
+
+    <div class="section">
+      <h2>10. Children's Privacy</h2>
+      <p>Our services are not intended for individuals under 13, and we do not knowingly collect data from children.</p>
+    </div>
+
+    <hr class="divider">
+
+    <div class="section">
+      <h2>11. Changes to This Policy</h2>
+      <p>We may update this Privacy Policy from time to time. Changes will be posted with an updated revision date.</p>
+    </div>
+
+    <hr class="divider">
+
+    <div class="section">
+      <h2>12. Contact Information</h2>
+      <p>Email: <a href="mailto:info@bdpl.com.np">info@bdpl.com.np</a><br>
+      Address: Sinamangal-09, Kathmandu</p>
+    </div>
+
+    <hr class="divider">
+
+    <div class="section">
+      <h2>13. Meta (Facebook) Platform Data Usage</h2>
+      <p>makuro.io's use of data received from Meta APIs will comply with all applicable Meta Platform Terms and Developer Policies.</p>
+      <p>Specifically:</p>
+      <ul>
+        <li>Data accessed via Meta APIs (including messages) is used only to provide user-requested messaging functionality</li>
+        <li>We do not use this data for advertising, profiling, or resale</li>
+        <li>We do not transfer Meta data to third parties except as necessary to operate the service</li>
+        <li>Users can request deletion of their data at any time</li>
+      </ul>
+    </div>
+
+    <hr class="divider">
+
+    <div class="section">
+      <h2>14. Data Deletion Instructions</h2>
+      <p>Users may request deletion of their data by:</p>
+      <ul>
+        <li>Emailing: <a href="mailto:info@bdpl.com.np">info@bdpl.com.np</a></li>
+        <li>Disconnecting their accounts via the platform settings</li>
+      </ul>
+      <p>Upon request, we will delete associated data within a reasonable timeframe unless retention is required by law.</p>
+    </div>
+
+  </div>
+
+  <footer>
+    <span class="footer-copy">&copy; 2026 Makuro.io &mdash; All rights reserved</span>
+  </footer>
+
+</div>
+
+</body>
+</html>
