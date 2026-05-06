@@ -122,6 +122,25 @@
         width: auto;
         height: 44px;
       }
+      .nav-title {
+        flex: 1;
+        text-align: center;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .page-title {
+        font-family: "DM Serif Display", serif;
+        font-size: clamp(2rem, 4.5vw, 3rem);
+        font-weight: 400;
+        line-height: 1.15;
+        letter-spacing: -0.02em;
+        color: var(--ink);
+        white-space: nowrap;
+        transform-origin: center center;
+        will-change: transform;
+      }
       .back-link {
         display: inline-flex;
         align-items: center;
@@ -139,26 +158,6 @@
       .back-link svg {
         width: 14px;
         height: 14px;
-      }
-
-      /* Sticky title - top matches nav height, set in CSS to avoid JS timing jumps */
-      .sticky-title-wrap {
-        position: sticky;
-        top: var(--nav-h);
-        z-index: 50;
-        background: var(--surface);
-        width: 100%;
-        text-align: center;
-        will-change: transform;
-      }
-      .page-title {
-        font-family: "DM Serif Display", serif;
-        font-size: clamp(2rem, 4.5vw, 3rem);
-        font-weight: 400;
-        line-height: 1.15;
-        letter-spacing: -0.02em;
-        color: var(--ink);
-        white-space: nowrap;
       }
 
       .last-updated {
@@ -338,6 +337,9 @@
           <img src="./logo.png" class="logo-icon" alt="Makuro Logo" />
         </a>
       </div>
+      <div class="nav-title">
+        <h1 class="page-title">Privacy Policy</h1>
+      </div>
       <a href="/" class="back-link">
         <svg
           viewBox="0 0 16 16"
@@ -352,11 +354,6 @@
         Back to Home
       </a>
     </nav>
-
-    <!-- Sticky title - sticks below the nav -->
-    <div class="sticky-title-wrap">
-      <h1 class="page-title">Privacy Policy</h1>
-    </div>
 
     <div class="content">
       <p class="last-updated">Last updated: April 30, 2026</p>
@@ -626,5 +623,37 @@
         >&copy; 2026 Makuro.io &mdash; All rights reserved</span
       >
     </footer>
+
+    <script>
+      (() => {
+        const title = document.querySelector(".page-title");
+        if (!title) return;
+
+        const SCROLL_DISTANCE = 200; // px over which the title shrinks
+        const MIN_SCALE = 0.55; // smallest scale when fully scrolled
+        let ticking = false;
+
+        function updateScale() {
+          const scrollY = window.scrollY;
+          const progress = Math.min(scrollY / SCROLL_DISTANCE, 1);
+          // Ease out cubic for smooth deceleration
+          const eased = 1 - Math.pow(1 - progress, 3);
+          const scale = 1 - eased * (1 - MIN_SCALE);
+          title.style.transform = `scale(${scale})`;
+          ticking = false;
+        }
+
+        window.addEventListener(
+          "scroll",
+          () => {
+            if (!ticking) {
+              requestAnimationFrame(updateScale);
+              ticking = true;
+            }
+          },
+          { passive: true },
+        );
+      })();
+    </script>
   </body>
 </html>
