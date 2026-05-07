@@ -312,18 +312,40 @@
         }
       }
 
-      @media (max-width: 640px) {
+      @media (max-width: 768px) {
         :root {
-          --nav-h: 92px; /* 1.5rem(24px) + 44px + 1.5rem(24px) */
+          --nav-h: 72px; /* 1rem(16px) + 32px + 1rem(16px) + 8px gap */
         }
         nav {
-          padding: 1.5rem 1.25rem;
+          padding: 1rem 1.25rem;
+          gap: 8px;
+        }
+        .logo-icon {
+          height: 32px;
+        }
+        .page-title {
+          font-size: clamp(1.1rem, 4vw, 1.5rem);
+        }
+        .back-link {
+          font-size: 0.75rem;
+        }
+        .back-link .back-text-full {
+          display: none;
+        }
+        .back-link .back-text-short {
+          display: inline;
         }
         .content {
           padding: 1.5rem 1.25rem 3rem;
         }
         footer {
           padding: 1.5rem 1.25rem;
+        }
+      }
+
+      @media (min-width: 769px) {
+        .back-link .back-text-short {
+          display: none;
         }
       }
     </style>
@@ -351,7 +373,8 @@
         >
           <path d="M10 13L5 8l5-5" />
         </svg>
-        Back to Home
+        <span class="back-text-full">Back to Home</span>
+        <span class="back-text-short">Back</span>
       </a>
     </nav>
 
