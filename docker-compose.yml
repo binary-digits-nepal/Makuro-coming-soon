@@ -6,10 +6,11 @@ services:
     ports:
       - "${APP_PORT:-3000}:3000"
     volumes:
-      - waitlist-data:/app/data
+      - makuro-waitlist-data:/app/data
     environment:
       - NODE_ENV=production
       - DATA_DIR=/app/data
 
 volumes:
-  waitlist-data:
+  makuro-waitlist-data:
+    name: makuro-waitlist-data
