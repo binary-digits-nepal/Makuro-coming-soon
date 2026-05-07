@@ -122,6 +122,9 @@
         width: auto;
         height: 44px;
       }
+      .logo-half {
+        display: none;
+      }
       .nav-title {
         flex: 1;
         text-align: center;
@@ -320,11 +323,12 @@
           padding: 1rem 1.25rem;
           gap: 8px;
         }
-        .logo-icon {
-          height: 32px;
+        .logo-full {
+          display: none;
         }
-        .page-title {
-          font-size: clamp(1.1rem, 4vw, 1.5rem);
+        .logo-half {
+          display: block;
+          height: 32px;
         }
         .back-link {
           font-size: 0.75rem;
@@ -356,7 +360,12 @@
     <nav id="mainNav">
       <div class="logo-wrap">
         <a href="/">
-          <img src="./logo.png" class="logo-icon" alt="Makuro Logo" />
+          <img src="./logo.png" class="logo-icon logo-full" alt="Makuro Logo" />
+          <img
+            src="./logo-half.png"
+            class="logo-icon logo-half"
+            alt="Makuro Logo"
+          />
         </a>
       </div>
       <div class="nav-title">
@@ -652,14 +661,19 @@
         const title = document.querySelector(".page-title");
         if (!title) return;
 
-        const SCROLL_DISTANCE = 200; // px over which the title shrinks
-        const MIN_SCALE = 0.55; // smallest scale when fully scrolled
+        const SCROLL_DISTANCE = 200;
+        const MIN_SCALE = 0.55;
         let ticking = false;
+        const isMobile = window.matchMedia("(max-width: 768px)");
 
         function updateScale() {
+          if (isMobile.matches) {
+            title.style.transform = "scale(1)";
+            ticking = false;
+            return;
+          }
           const scrollY = window.scrollY;
           const progress = Math.min(scrollY / SCROLL_DISTANCE, 1);
-          // Ease out cubic for smooth deceleration
           const eased = 1 - Math.pow(1 - progress, 3);
           const scale = 1 - eased * (1 - MIN_SCALE);
           title.style.transform = `scale(${scale})`;
@@ -676,6 +690,15 @@
           },
           { passive: true },
         );
+
+        // Reset title if viewport changes to/from mobile
+        isMobile.addEventListener("change", () => {
+          if (isMobile.matches) {
+            title.style.transform = "scale(1)";
+          } else {
+            updateScale();
+          }
+        });
       })();
     </script>
   </body>
