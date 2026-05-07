@@ -1,643 +1,874 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Makuro.io — Coming Soon</title>
-<link rel="icon" type="image/png" href="favicon.png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
-<style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-  :root {
-    --blue: #4d96ff;
-    --blue-dark: #1a5fcf;
-    --blue-light: #e8f1ff;
-    --ink: #0f1117;
-    --ink-mid: #4a4f5e;
-    --ink-light: #9aa0b0;
-    --surface: #ffffff;
-    --surface-2: #f7f8fc;
-    --border: rgba(77,150,255,0.15);
-  }
-
-  html { scroll-behavior: smooth; }
-
-  body {
-    font-family: 'DM Sans', sans-serif;
-    background: var(--surface);
-    color: var(--ink);
-    min-height: 100vh;
-    overflow-x: hidden;
-  }
-
-  /* ── NOISE TEXTURE OVERLAY ── */
-  body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
-    pointer-events: none;
-    z-index: 0;
-  }
-
-  /* ── MESH BACKGROUND ── */
-  .bg-mesh {
-    position: fixed;
-    inset: 0;
-    z-index: -1;
-    overflow: hidden;
-  }
-  .bg-mesh::before {
-    content: '';
-    position: absolute;
-    width: 800px; height: 800px;
-    border-radius: 50%;
-    background: radial-gradient(circle, rgba(77,150,255,0.08) 0%, transparent 70%);
-    top: -200px; right: -200px;
-    animation: drift 18s ease-in-out infinite alternate;
-  }
-  .bg-mesh::after {
-    content: '';
-    position: absolute;
-    width: 600px; height: 600px;
-    border-radius: 50%;
-    background: radial-gradient(circle, rgba(77,150,255,0.05) 0%, transparent 70%);
-    bottom: -100px; left: -150px;
-    animation: drift 22s ease-in-out infinite alternate-reverse;
-  }
-  @keyframes drift {
-    0% { transform: translate(0, 0) scale(1); }
-    100% { transform: translate(40px, 30px) scale(1.05); }
-  }
-
-  /* ── LAYOUT ── */
-  .page {
-    position: relative;
-    z-index: 1;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-  }
-
-  /* ── NAV ── */
-  nav {
-    padding: 2rem 3rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    animation: fadeDown 0.8s ease both;
-  }
-  .logo-wrap {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-  .logo-icon {
-    width: auto;
-    height: 44px;
-  }
-
-  /* ── HERO ── */
-  .hero {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    padding: 4rem 2rem 3rem;
-    gap: 2rem;
-  }
-
-  .coming-soon-tag {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    animation: fadeUp 0.8s 0.1s ease both;
-  }
-  .cs-line {
-    width: 28px;
-    height: 1px;
-    background: var(--blue);
-    opacity: 0.5;
-  }
-  .cs-text {
-    font-family: 'DM Sans', sans-serif;
-    font-size: 0.72rem;
-    font-weight: 500;
-    letter-spacing: 0.22em;
-    text-transform: uppercase;
-    color: var(--blue);
-    overflow: hidden;
-    white-space: nowrap;
-    border-right: 2px solid var(--blue);
-    width: 0;
-    animation: typeIn 1.4s 0.3s steps(11, end) forwards, blinkCursor 0.9s 0.3s step-end 5;
-  }
-  @keyframes typeIn {
-    from { width: 0; }
-    to   { width: 10em; border-right-color: transparent; }
-  }
-  @keyframes blinkCursor {
-    0%, 100% { border-color: var(--blue); }
-    50%       { border-color: transparent; }
-  }
-
-  .headline {
-    font-family: 'DM Serif Display', serif;
-    font-size: clamp(2.6rem, 6vw, 5rem);
-    font-weight: 400;
-    line-height: 1.1;
-    letter-spacing: -0.02em;
-    color: var(--ink);
-    max-width: 780px;
-    animation: fadeUp 0.8s 0.2s ease both;
-  }
-  .headline em {
-    font-style: italic;
-    color: var(--blue);
-  }
-
-  .subheadline {
-    font-size: 1.05rem;
-    font-weight: 300;
-    color: var(--ink-mid);
-    max-width: 520px;
-    line-height: 1.7;
-    animation: fadeUp 0.8s 0.35s ease both;
-  }
-
-  /* ── CHANNEL ICONS ── */
-  .channels {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    animation: fadeUp 0.8s 0.45s ease both;
-  }
-  .ch-label {
-    font-size: 0.78rem;
-    font-weight: 500;
-    color: var(--ink-light);
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-    margin-right: 4px;
-  }
-  .ch-icon {
-    width: 38px; height: 38px;
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border: 1px solid rgba(0,0,0,0.07);
-    background: white;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-  }
-  .ch-icon:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(0,0,0,0.1);
-  }
-  .ch-icon svg { width: 20px; height: 20px; }
-
-  /* ── EMAIL FORM ── */
-  .form-wrap {
-    display: flex;
-    gap: 8px;
-    width: 100%;
-    max-width: 460px;
-    animation: fadeUp 0.8s 0.55s ease both;
-  }
-  .email-input {
-    flex: 1;
-    height: 50px;
-    padding: 0 1.1rem;
-    border: 1.5px solid rgba(77,150,255,0.25);
-    border-radius: 12px;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 0.9rem;
-    color: var(--ink);
-    background: white;
-    outline: none;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
-  }
-  .email-input::placeholder { color: var(--ink-light); }
-  .email-input:focus {
-    border-color: var(--blue);
-    box-shadow: 0 0 0 4px rgba(77,150,255,0.1);
-  }
-  .btn-notify {
-    height: 50px;
-    padding: 0 1.4rem;
-    background: var(--blue);
-    color: white;
-    border: none;
-    border-radius: 12px;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 0.88rem;
-    font-weight: 500;
-    cursor: pointer;
-    white-space: nowrap;
-    transition: background 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
-    box-shadow: 0 4px 16px rgba(77,150,255,0.3);
-  }
-  .btn-notify:hover {
-    background: var(--blue-dark);
-    transform: translateY(-1px);
-    box-shadow: 0 6px 20px rgba(77,150,255,0.4);
-  }
-  .btn-notify:active { transform: translateY(0); }
-
-  .success-msg {
-    font-size: 0.85rem;
-    color: #1a5fcf;
-    font-weight: 500;
-    display: none;
-    animation: fadeUp 0.4s ease both;
-  }
-
-  /* ── FEATURE STRIP ── */
-  .features {
-    display: flex;
-    justify-content: center;
-    gap: 0;
-    border-top: 1px solid rgba(77,150,255,0.1);
-    border-bottom: 1px solid rgba(77,150,255,0.1);
-    background: var(--surface-2);
-    animation: fadeUp 0.8s 0.7s ease both;
-    flex-wrap: wrap;
-  }
-  .feat {
-    flex: 1;
-    min-width: 200px;
-    padding: 1.4rem 2rem;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    border-right: 1px solid rgba(77,150,255,0.1);
-    transition: background 0.2s ease;
-  }
-  .feat:last-child { border-right: none; }
-  .feat:hover { background: rgba(77,150,255,0.03); }
-  .feat-icon {
-    width: 32px; height: 32px;
-    background: var(--blue-light);
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-  }
-  .feat-icon svg { width: 16px; height: 16px; }
-  .feat-text {
-    font-size: 0.82rem;
-    font-weight: 500;
-    color: var(--ink-mid);
-    line-height: 1.4;
-  }
-  .feat-text strong { color: var(--ink); display: block; font-size: 0.85rem; }
-
-  /* ── FOOTER ── */
-  footer {
-    padding: 1.8rem 3rem;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    animation: fadeDown 0.8s 0.8s ease both;
-    flex-wrap: wrap;
-    gap: 1rem;
-  }
-  .footer-copy {
-    font-size: 0.78rem;
-    color: var(--ink-light);
-  }
-  .social-links {
-    display: flex;
-    gap: 8px;
-  }
-  .social-btn {
-    width: 34px; height: 34px;
-    border-radius: 8px;
-    border: 1px solid rgba(0,0,0,0.08);
-    background: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    text-decoration: none;
-    transition: border-color 0.2s ease, background 0.2s ease, transform 0.15s ease;
-  }
-  .social-btn:hover {
-    border-color: var(--blue);
-    background: var(--blue-light);
-    transform: translateY(-1px);
-  }
-  .social-btn svg { width: 15px; height: 15px; }
-
-  /* ── ANIMATIONS ── */
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(20px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-  @keyframes fadeDown {
-    from { opacity: 0; transform: translateY(-12px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-
-  /* ── TOAST ── */
-  .toast {
-    position: fixed;
-    bottom: 2rem;
-    left: 50%;
-    transform: translateX(-50%) translateY(20px);
-    background: var(--ink);
-    color: white;
-    padding: 0.75rem 1.25rem;
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-size: 0.88rem;
-    font-weight: 400;
-    white-space: nowrap;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.3s ease, transform 0.3s ease;
-    z-index: 999;
-    box-shadow: 0 8px 30px rgba(0,0,0,0.12);
-  }
-  .toast.show {
-    opacity: 1;
-    transform: translateX(-50%) translateY(0);
-  }
-  .toast-icon {
-    width: 20px; height: 20px;
-    background: #22c55e;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-  }
-  .toast-icon svg { width: 11px; height: 11px; }
-
-  /* ── COUNTER ── */
-  .counter-row {
-    display: flex;
-    gap: 2.5rem;
-    animation: fadeUp 0.8s 0.65s ease both;
-  }
-  .counter-item { text-align: center; }
-  .counter-num {
-    font-family: 'DM Serif Display', serif;
-    font-size: 1.8rem;
-    color: var(--blue);
-    display: block;
-    line-height: 1;
-  }
-  .counter-label {
-    font-size: 0.72rem;
-    color: var(--ink-light);
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    font-weight: 500;
-    margin-top: 2px;
-    display: block;
-  }
-  .counter-divider {
-    width: 1px;
-    background: var(--border);
-    align-self: stretch;
-  }
-</style>
-</head>
-<body>
-
-<div class="bg-mesh"></div>
-
-<div class="page">
-
-  <!-- NAV -->
-  <nav>
-    <div class="logo-wrap">
-      <img src="./logo.png" class="logo-icon" alt="Makuro Logo">
-    </div>
-  </nav>
-
-  <!-- HERO -->
-  <main class="hero">
-
-    <div class="coming-soon-tag">
-      <span class="cs-line"></span>
-      <span class="cs-text">Coming Soon</span>
-      <span class="cs-line"></span>
-    </div>
-
-    <h1 class="headline">
-      Your Business, Woven Into<br><em>Every Channel.</em>
-    </h1>
-
-    <p class="subheadline">
-      One intelligent platform to manage every customer conversation — across Facebook, Instagram, WhatsApp, and TikTok — without switching tabs.
-    </p>
-
-    <!-- Channel icons -->
-    <div class="channels">
-      <span class="ch-label">Works with</span>
-
-      <!-- Facebook -->
-      <div class="ch-icon" title="Facebook">
-        <svg viewBox="0 0 24 24" fill="#1877F2"><path d="M24 12.073C24 5.405 18.627 0 12 0S0 5.405 0 12.073C0 18.1 4.388 23.094 10.125 24v-8.437H7.078v-3.49h3.047V9.413c0-3.026 1.792-4.697 4.533-4.697 1.313 0 2.686.236 2.686.236v2.97h-1.513c-1.491 0-1.956.93-1.956 1.886v2.265h3.328l-.532 3.49h-2.796V24C19.612 23.094 24 18.1 24 12.073z"/></svg>
-      </div>
-
-      <!-- Instagram -->
-      <div class="ch-icon" title="Instagram">
-        <svg viewBox="0 0 24 24"><defs><radialGradient id="ig" cx="30%" cy="107%" r="150%"><stop offset="0%" stop-color="#fdf497"/><stop offset="5%" stop-color="#fdf497"/><stop offset="45%" stop-color="#fd5949"/><stop offset="60%" stop-color="#d6249f"/><stop offset="90%" stop-color="#285AEB"/></radialGradient></defs><path fill="url(#ig)" d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
-      </div>
-
-      <!-- WhatsApp -->
-      <div class="ch-icon" title="WhatsApp">
-        <svg viewBox="0 0 24 24" fill="#25D366"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-      </div>
-
-      <!-- TikTok -->
-      <div class="ch-icon" title="TikTok">
-        <svg viewBox="0 0 24 24" fill="#000000"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.27 6.27 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.18 8.18 0 004.78 1.52V6.78a4.86 4.86 0 01-1.01-.09z"/></svg>
-      </div>
-    </div>
-
-    <!-- Email form -->
-    <div class="form-wrap">
-      <input class="email-input" id="emailInput" type="email" placeholder="Enter your email address" />
-      <button class="btn-notify" id="notifyBtn" onclick="handleSubmit()">Notify me</button>
-    </div>
-    <p class="success-msg" id="successMsg"></p>
-
-    <!-- Counter row -->
-    <div class="counter-row">
-      <div class="counter-item">
-        <span class="counter-num" id="c1">0</span>
-        <span class="counter-label">Businesses waiting</span>
-      </div>
-      <div class="counter-divider"></div>
-      <div class="counter-item">
-        <span class="counter-num">4</span>
-        <span class="counter-label">Platforms connected</span>
-      </div>
-      <div class="counter-divider"></div>
-      <div class="counter-item">
-        <span class="counter-num">1</span>
-        <span class="counter-label">Unified inbox</span>
-      </div>
-    </div>
-
-  </main>
-
-  <!-- FEATURE STRIP -->
-  <div class="features">
-
-    <div class="feat">
-      <div class="feat-icon">
-        <svg viewBox="0 0 16 16" fill="none" stroke="#4d96ff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M2 4h12v8a1 1 0 01-1 1H3a1 1 0 01-1-1V4z"/>
-          <path d="M5 4V3a1 1 0 011-1h4a1 1 0 011 1v1"/>
-          <path d="M6 8h4M8 6v4"/>
-        </svg>
-      </div>
-      <div class="feat-text">
-        <strong>Unified Inbox</strong>
-        Every message in one place
-      </div>
-    </div>
-
-    <div class="feat">
-      <div class="feat-icon">
-        <svg viewBox="0 0 16 16" fill="none" stroke="#4d96ff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="8" cy="8" r="6"/>
-          <path d="M8 4v4l2.5 2.5"/>
-        </svg>
-      </div>
-      <div class="feat-text">
-        <strong>Real-time Sync</strong>
-        Instant cross-channel updates
-      </div>
-    </div>
-
-<div class="feat">
-      <div class="feat-icon">
-        <svg viewBox="0 0 16 16" fill="none" stroke="#4d96ff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M2 12s1-2 6-2 6 2 6 2"/>
-          <circle cx="8" cy="5" r="3"/>
-        </svg>
-      </div>
-      <div class="feat-text">
-        <strong>Team Collaboration</strong>
-        Work together seamlessly
-      </div>
-    </div>
-
-  </div>
-
-  <!-- FOOTER -->
-  <footer>
-     <span class="footer-copy">© 2026 Makuro.io — All rights reserved · <a href="/privacy.html" style="color: var(--blue); text-decoration: none;">Privacy Policy</a></span>
-    <div class="social-links">
-
-      <!-- Facebook -->
-      <a href="https://www.facebook.com/makuro.io" class="social-btn" title="Facebook" target="_blank">
-        <svg viewBox="0 0 24 24" fill="#1877F2"><path d="M24 12.073C24 5.405 18.627 0 12 0S0 5.405 0 12.073C0 18.1 4.388 23.094 10.125 24v-8.437H7.078v-3.49h3.047V9.413c0-3.026 1.792-4.697 4.533-4.697 1.313 0 2.686.236 2.686.236v2.97h-1.513c-1.491 0-1.956.93-1.956 1.886v2.265h3.328l-.532 3.49h-2.796V24C19.612 23.094 24 18.1 24 12.073z"/></svg>
-      </a>
-
-      <!-- Instagram -->
-      <a href="https://www.instagram.com/makuro.io" class="social-btn" title="Instagram" target="_blank">
-        <svg viewBox="0 0 24 24"><defs><radialGradient id="ig2" cx="30%" cy="107%" r="150%"><stop offset="0%" stop-color="#fdf497"/><stop offset="45%" stop-color="#fd5949"/><stop offset="60%" stop-color="#d6249f"/><stop offset="90%" stop-color="#285AEB"/></radialGradient></defs><path fill="url(#ig2)" d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
-      </a>
-    </div>
-  </footer>
-
-  <!-- TOAST -->
-  <div class="toast" id="toast">
-    <div class="toast-icon">
-      <svg viewBox="0 0 11 11" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <polyline points="1.5,5.5 4.5,8.5 9.5,2.5"/>
-      </svg>
-    </div>
-    You're on the list! We'll be in touch soon.
-  </div>
-
-</div>
-
-  <script>
-  function handleSubmit() {
-    const input = document.getElementById('emailInput');
-    const btn = document.getElementById('notifyBtn');
-    const msg = document.getElementById('successMsg');
-    const toastEl = document.getElementById('toast');
-    const val = input.value.trim();
-    if (!val || !val.includes('@')) {
-      input.style.borderColor = '#e24b4a';
-      input.style.boxShadow = '0 0 0 4px rgba(226,75,74,0.1)';
-      setTimeout(() => {
-        input.style.borderColor = '';
-        input.style.boxShadow = '';
-      }, 1800);
-      return;
-    }
-    fetch('/waitlist', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: val })
-    })
-    .then(r => r.json())
-    .then(data => {
-      if (data.ok) {
-        if (data.duplicate) {
-          msg.textContent = "You're already on the list! We'll reach out soon.";
-          toastEl.lastChild.textContent = "You're already on the list!";
-        } else {
-          msg.textContent = "You're on the list! We'll reach out soon.";
-          toastEl.lastChild.textContent = "You're on the list! We'll be in touch soon.";
-        }
-        input.style.display = 'none';
-        btn.style.display = 'none';
-        msg.style.display = 'block';
-        showToast();
-        fetchCount();
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Makuro.io — Coming Soon</title>
+    <link rel="icon" type="image/png" href="favicon.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&family=DM+Serif+Display:ital@0;1&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
       }
-    });
-  }
 
-  function fetchCount() {
-    fetch('/waitlist/count')
-      .then(r => r.json())
-      .then(data => animateCounterTo(data.count));
-  }
+      :root {
+        --blue: #4d96ff;
+        --blue-dark: #1a5fcf;
+        --blue-light: #e8f1ff;
+        --ink: #0f1117;
+        --ink-mid: #4a4f5e;
+        --ink-light: #9aa0b0;
+        --surface: #ffffff;
+        --surface-2: #f7f8fc;
+        --border: rgba(77, 150, 255, 0.15);
+      }
 
-  function showToast() {
-    const toast = document.getElementById('toast');
-    toast.classList.add('show');
-    setTimeout(() => toast.classList.remove('show'), 3500);
-  }
+      html {
+        scroll-behavior: smooth;
+      }
 
-  function animateCounterTo(target) {
-    const el = document.getElementById('c1');
-    const current = parseInt(el.textContent) || 0;
-    const diff = target - current;
-    if (diff <= 0) return;
-    const steps = 40;
-    const step = Math.ceil(diff / steps);
-    let count = current;
-    const interval = setInterval(() => {
-      count = Math.min(count + step, target);
-      el.textContent = count;
-      if (count >= target) clearInterval(interval);
-    }, 30);
-  }
+      body {
+        font-family: "DM Sans", sans-serif;
+        background: var(--surface);
+        color: var(--ink);
+        height: 100vh;
+        overflow: hidden;
+      }
 
-  window.addEventListener('load', fetchCount);
-</script>
+      /* ── NOISE TEXTURE OVERLAY ── */
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+        pointer-events: none;
+        z-index: 0;
+      }
 
-</body>
+      /* ── MESH BACKGROUND ── */
+      .bg-mesh {
+        position: fixed;
+        inset: 0;
+        z-index: -1;
+        overflow: hidden;
+      }
+      .bg-mesh::before {
+        content: "";
+        position: absolute;
+        width: 800px;
+        height: 800px;
+        border-radius: 50%;
+        background: radial-gradient(
+          circle,
+          rgba(77, 150, 255, 0.08) 0%,
+          transparent 70%
+        );
+        top: -200px;
+        right: -200px;
+        animation: drift 18s ease-in-out infinite alternate;
+      }
+      .bg-mesh::after {
+        content: "";
+        position: absolute;
+        width: 600px;
+        height: 600px;
+        border-radius: 50%;
+        background: radial-gradient(
+          circle,
+          rgba(77, 150, 255, 0.05) 0%,
+          transparent 70%
+        );
+        bottom: -100px;
+        left: -150px;
+        animation: drift 22s ease-in-out infinite alternate-reverse;
+      }
+      @keyframes drift {
+        0% {
+          transform: translate(0, 0) scale(1);
+        }
+        100% {
+          transform: translate(40px, 30px) scale(1.05);
+        }
+      }
+
+      /* ── LAYOUT ── */
+      .page {
+        position: relative;
+        z-index: 1;
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+
+      /* ── NAV ── */
+      nav {
+        padding: 1.2rem 3rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        animation: fadeDown 0.8s ease both;
+        flex-shrink: 0;
+      }
+      .logo-wrap {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .logo-icon {
+        width: auto;
+        height: 38px;
+      }
+
+      /* ── HERO ── */
+      .hero {
+        flex: 1 1 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 1.5rem 2rem 1rem;
+        gap: 1.1rem;
+        overflow: hidden;
+      }
+
+      .coming-soon-tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        animation: fadeUp 0.8s 0.1s ease both;
+      }
+      .cs-line {
+        width: 28px;
+        height: 1px;
+        background: var(--blue);
+        opacity: 0.5;
+      }
+      .cs-text {
+        font-family: "DM Sans", sans-serif;
+        font-size: 0.72rem;
+        font-weight: 500;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        color: var(--blue);
+        overflow: hidden;
+        white-space: nowrap;
+        border-right: 2px solid var(--blue);
+        width: 0;
+        animation:
+          typeIn 1.4s 0.3s steps(11, end) forwards,
+          blinkCursor 0.9s 0.3s step-end 5;
+      }
+      @keyframes typeIn {
+        from {
+          width: 0;
+        }
+        to {
+          width: 10em;
+          border-right-color: transparent;
+        }
+      }
+      @keyframes blinkCursor {
+        0%,
+        100% {
+          border-color: var(--blue);
+        }
+        50% {
+          border-color: transparent;
+        }
+      }
+
+      .headline {
+        font-family: "DM Serif Display", serif;
+        font-size: clamp(1.8rem, 4.5vw, 3.2rem);
+        font-weight: 400;
+        line-height: 1.1;
+        letter-spacing: -0.02em;
+        color: var(--ink);
+        max-width: 780px;
+        animation: fadeUp 0.8s 0.2s ease both;
+      }
+      .headline em {
+        font-style: italic;
+        color: var(--blue);
+      }
+
+      .subheadline {
+        font-size: 0.92rem;
+        font-weight: 300;
+        color: var(--ink-mid);
+        max-width: 520px;
+        line-height: 1.6;
+        animation: fadeUp 0.8s 0.35s ease both;
+      }
+
+      /* ── CHANNEL ICONS ── */
+      .channels {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        animation: fadeUp 0.8s 0.45s ease both;
+      }
+      .ch-label {
+        font-size: 0.78rem;
+        font-weight: 500;
+        color: var(--ink-light);
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        margin-right: 4px;
+      }
+      .ch-icon {
+        width: 38px;
+        height: 38px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid rgba(0, 0, 0, 0.07);
+        background: white;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        transition:
+          transform 0.2s ease,
+          box-shadow 0.2s ease;
+      }
+      .ch-icon:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+      }
+      .ch-icon svg {
+        width: 20px;
+        height: 20px;
+      }
+
+      /* ── EMAIL FORM ── */
+      .form-wrap {
+        display: flex;
+        gap: 8px;
+        width: 100%;
+        max-width: 440px;
+        animation: fadeUp 0.8s 0.55s ease both;
+      }
+      .email-input {
+        flex: 1;
+        height: 44px;
+        padding: 0 1.1rem;
+        border: 1.5px solid rgba(77, 150, 255, 0.25);
+        border-radius: 12px;
+        font-family: "DM Sans", sans-serif;
+        font-size: 0.9rem;
+        color: var(--ink);
+        background: white;
+        outline: none;
+        transition:
+          border-color 0.2s ease,
+          box-shadow 0.2s ease;
+      }
+      .email-input::placeholder {
+        color: var(--ink-light);
+      }
+      .email-input:focus {
+        border-color: var(--blue);
+        box-shadow: 0 0 0 4px rgba(77, 150, 255, 0.1);
+      }
+      .btn-notify {
+        height: 44px;
+        padding: 0 1.2rem;
+        background: var(--blue);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        font-family: "DM Sans", sans-serif;
+        font-size: 0.88rem;
+        font-weight: 500;
+        cursor: pointer;
+        white-space: nowrap;
+        transition:
+          background 0.2s ease,
+          transform 0.15s ease,
+          box-shadow 0.2s ease;
+        box-shadow: 0 4px 16px rgba(77, 150, 255, 0.3);
+      }
+      .btn-notify:hover {
+        background: var(--blue-dark);
+        transform: translateY(-1px);
+        box-shadow: 0 6px 20px rgba(77, 150, 255, 0.4);
+      }
+      .btn-notify:active {
+        transform: translateY(0);
+      }
+
+      .success-msg {
+        font-size: 0.85rem;
+        color: #1a5fcf;
+        font-weight: 500;
+        display: none;
+        animation: fadeUp 0.4s ease both;
+      }
+
+      /* ── FEATURE STRIP ── */
+      .features {
+        display: flex;
+        justify-content: center;
+        gap: 0;
+        border-top: 1px solid rgba(77, 150, 255, 0.1);
+        border-bottom: 1px solid rgba(77, 150, 255, 0.1);
+        background: var(--surface-2);
+        animation: fadeUp 0.8s 0.7s ease both;
+        flex-wrap: wrap;
+        flex-shrink: 0;
+      }
+      .feat {
+        flex: 1;
+        min-width: 200px;
+        padding: 1rem 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        border-right: 1px solid rgba(77, 150, 255, 0.1);
+        transition: background 0.2s ease;
+      }
+      .feat:last-child {
+        border-right: none;
+      }
+      .feat:hover {
+        background: rgba(77, 150, 255, 0.03);
+      }
+      .feat-icon {
+        width: 32px;
+        height: 32px;
+        background: var(--blue-light);
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+      .feat-icon svg {
+        width: 16px;
+        height: 16px;
+      }
+      .feat-text {
+        font-size: 0.82rem;
+        font-weight: 500;
+        color: var(--ink-mid);
+        line-height: 1.4;
+      }
+      .feat-text strong {
+        color: var(--ink);
+        display: block;
+        font-size: 0.85rem;
+      }
+
+      /* ── FOOTER ── */
+      footer {
+        padding: 1rem 3rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        animation: fadeDown 0.8s 0.8s ease both;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        flex-shrink: 0;
+      }
+      .footer-copy {
+        font-size: 0.78rem;
+        color: var(--ink-light);
+      }
+      .social-links {
+        display: flex;
+        gap: 8px;
+      }
+      .social-btn {
+        width: 34px;
+        height: 34px;
+        border-radius: 8px;
+        border: 1px solid rgba(0, 0, 0, 0.08);
+        background: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        text-decoration: none;
+        transition:
+          border-color 0.2s ease,
+          background 0.2s ease,
+          transform 0.15s ease;
+      }
+      .social-btn:hover {
+        border-color: var(--blue);
+        background: var(--blue-light);
+        transform: translateY(-1px);
+      }
+      .social-btn svg {
+        width: 15px;
+        height: 15px;
+      }
+
+      /* ── ANIMATIONS ── */
+      @keyframes fadeUp {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      @keyframes fadeDown {
+        from {
+          opacity: 0;
+          transform: translateY(-12px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* ── TOAST ── */
+      .toast {
+        position: fixed;
+        bottom: 2rem;
+        left: 50%;
+        transform: translateX(-50%) translateY(20px);
+        background: var(--ink);
+        color: white;
+        padding: 0.75rem 1.25rem;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 0.88rem;
+        font-weight: 400;
+        white-space: nowrap;
+        opacity: 0;
+        pointer-events: none;
+        transition:
+          opacity 0.3s ease,
+          transform 0.3s ease;
+        z-index: 999;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+      }
+      .toast.show {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+      }
+      .toast-icon {
+        width: 20px;
+        height: 20px;
+        background: #22c55e;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+      .toast-icon svg {
+        width: 11px;
+        height: 11px;
+      }
+
+      /* ── COUNTER ── */
+      .counter-row {
+        display: flex;
+        gap: 1.8rem;
+        animation: fadeUp 0.8s 0.65s ease both;
+      }
+      .counter-item {
+        text-align: center;
+      }
+      .counter-num {
+        font-family: "DM Serif Display", serif;
+        font-size: 1.4rem;
+        color: var(--blue);
+        display: block;
+        line-height: 1;
+      }
+      .counter-label {
+        font-size: 0.72rem;
+        color: var(--ink-light);
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        font-weight: 500;
+        margin-top: 2px;
+        display: block;
+      }
+      .counter-divider {
+        width: 1px;
+        background: var(--border);
+        align-self: stretch;
+      }
+
+      /* ── MOBILE: allow scrolling ── */
+      @media (max-width: 768px) {
+        body {
+          height: auto;
+          overflow-y: auto;
+          overflow-x: hidden;
+        }
+        .page {
+          height: auto;
+          min-height: 100vh;
+        }
+        .hero {
+          flex: 1;
+          padding: 2rem 1.5rem 2rem;
+          gap: 1.4rem;
+          overflow: visible;
+        }
+        .headline {
+          font-size: clamp(2rem, 7vw, 3rem);
+        }
+        nav {
+          padding: 1.5rem 1.5rem;
+        }
+        .logo-icon {
+          height: 40px;
+        }
+        .email-input,
+        .btn-notify {
+          height: 48px;
+        }
+        .counter-row {
+          gap: 1.5rem;
+        }
+        .counter-num {
+          font-size: 1.5rem;
+        }
+        .feat {
+          padding: 1.2rem 1.2rem;
+        }
+        footer {
+          padding: 1.2rem 1.5rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="bg-mesh"></div>
+
+    <div class="page">
+      <!-- NAV -->
+      <nav>
+        <div class="logo-wrap">
+          <img src="./logo.png" class="logo-icon" alt="Makuro Logo" />
+        </div>
+      </nav>
+
+      <!-- HERO -->
+      <main class="hero">
+        <div class="coming-soon-tag">
+          <span class="cs-line"></span>
+          <span class="cs-text">Coming Soon</span>
+          <span class="cs-line"></span>
+        </div>
+
+        <h1 class="headline">
+          Your Business, Woven Into<br /><em>Every Channel.</em>
+        </h1>
+
+        <p class="subheadline">
+          One intelligent platform to manage every customer conversation —
+          across Facebook, Instagram, WhatsApp, and TikTok — without switching
+          tabs.
+        </p>
+
+        <!-- Channel icons -->
+        <div class="channels">
+          <span class="ch-label">Works with</span>
+
+          <!-- Facebook -->
+          <div class="ch-icon" title="Facebook">
+            <svg viewBox="0 0 24 24" fill="#1877F2">
+              <path
+                d="M24 12.073C24 5.405 18.627 0 12 0S0 5.405 0 12.073C0 18.1 4.388 23.094 10.125 24v-8.437H7.078v-3.49h3.047V9.413c0-3.026 1.792-4.697 4.533-4.697 1.313 0 2.686.236 2.686.236v2.97h-1.513c-1.491 0-1.956.93-1.956 1.886v2.265h3.328l-.532 3.49h-2.796V24C19.612 23.094 24 18.1 24 12.073z"
+              />
+            </svg>
+          </div>
+
+          <!-- Instagram -->
+          <div class="ch-icon" title="Instagram">
+            <svg viewBox="0 0 24 24">
+              <defs>
+                <radialGradient id="ig" cx="30%" cy="107%" r="150%">
+                  <stop offset="0%" stop-color="#fdf497" />
+                  <stop offset="5%" stop-color="#fdf497" />
+                  <stop offset="45%" stop-color="#fd5949" />
+                  <stop offset="60%" stop-color="#d6249f" />
+                  <stop offset="90%" stop-color="#285AEB" />
+                </radialGradient>
+              </defs>
+              <path
+                fill="url(#ig)"
+                d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"
+              />
+            </svg>
+          </div>
+
+          <!-- WhatsApp -->
+          <div class="ch-icon" title="WhatsApp">
+            <svg viewBox="0 0 24 24" fill="#25D366">
+              <path
+                d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"
+              />
+            </svg>
+          </div>
+
+          <!-- TikTok -->
+          <div class="ch-icon" title="TikTok">
+            <svg viewBox="0 0 24 24" fill="#000000">
+              <path
+                d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.27 6.27 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.18 8.18 0 004.78 1.52V6.78a4.86 4.86 0 01-1.01-.09z"
+              />
+            </svg>
+          </div>
+        </div>
+
+        <!-- Email form -->
+        <div class="form-wrap">
+          <input
+            class="email-input"
+            id="emailInput"
+            type="email"
+            placeholder="Enter your email address"
+          />
+          <button class="btn-notify" id="notifyBtn" onclick="handleSubmit()">
+            Notify me
+          </button>
+        </div>
+        <p class="success-msg" id="successMsg"></p>
+
+        <!-- Counter row -->
+        <div class="counter-row">
+          <div class="counter-item">
+            <span class="counter-num" id="c1">0</span>
+            <span class="counter-label">Businesses waiting</span>
+          </div>
+          <div class="counter-divider"></div>
+          <div class="counter-item">
+            <span class="counter-num">4</span>
+            <span class="counter-label">Platforms connected</span>
+          </div>
+          <div class="counter-divider"></div>
+          <div class="counter-item">
+            <span class="counter-num">1</span>
+            <span class="counter-label">Unified inbox</span>
+          </div>
+        </div>
+      </main>
+
+      <!-- FEATURE STRIP -->
+      <div class="features">
+        <div class="feat">
+          <div class="feat-icon">
+            <svg
+              viewBox="0 0 16 16"
+              fill="none"
+              stroke="#4d96ff"
+              stroke-width="1.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M2 4h12v8a1 1 0 01-1 1H3a1 1 0 01-1-1V4z" />
+              <path d="M5 4V3a1 1 0 011-1h4a1 1 0 011 1v1" />
+              <path d="M6 8h4M8 6v4" />
+            </svg>
+          </div>
+          <div class="feat-text">
+            <strong>Unified Inbox</strong>
+            Every message in one place
+          </div>
+        </div>
+
+        <div class="feat">
+          <div class="feat-icon">
+            <svg
+              viewBox="0 0 16 16"
+              fill="none"
+              stroke="#4d96ff"
+              stroke-width="1.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <circle cx="8" cy="8" r="6" />
+              <path d="M8 4v4l2.5 2.5" />
+            </svg>
+          </div>
+          <div class="feat-text">
+            <strong>Real-time Sync</strong>
+            Instant cross-channel updates
+          </div>
+        </div>
+
+        <div class="feat">
+          <div class="feat-icon">
+            <svg
+              viewBox="0 0 16 16"
+              fill="none"
+              stroke="#4d96ff"
+              stroke-width="1.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M2 12s1-2 6-2 6 2 6 2" />
+              <circle cx="8" cy="5" r="3" />
+            </svg>
+          </div>
+          <div class="feat-text">
+            <strong>Team Collaboration</strong>
+            Work together seamlessly
+          </div>
+        </div>
+      </div>
+
+      <!-- FOOTER -->
+      <footer>
+        <span class="footer-copy"
+          >© 2026 Makuro.io — All rights reserved ·
+          <a
+            href="/privacy.html"
+            style="color: var(--blue); text-decoration: none"
+            >Privacy Policy</a
+          ></span
+        >
+        <div class="social-links">
+          <!-- Facebook -->
+          <a
+            href="https://www.facebook.com/makuro.io"
+            class="social-btn"
+            title="Facebook"
+            target="_blank"
+          >
+            <svg viewBox="0 0 24 24" fill="#1877F2">
+              <path
+                d="M24 12.073C24 5.405 18.627 0 12 0S0 5.405 0 12.073C0 18.1 4.388 23.094 10.125 24v-8.437H7.078v-3.49h3.047V9.413c0-3.026 1.792-4.697 4.533-4.697 1.313 0 2.686.236 2.686.236v2.97h-1.513c-1.491 0-1.956.93-1.956 1.886v2.265h3.328l-.532 3.49h-2.796V24C19.612 23.094 24 18.1 24 12.073z"
+              />
+            </svg>
+          </a>
+
+          <!-- Instagram -->
+          <a
+            href="https://www.instagram.com/makuro.io"
+            class="social-btn"
+            title="Instagram"
+            target="_blank"
+          >
+            <svg viewBox="0 0 24 24">
+              <defs>
+                <radialGradient id="ig2" cx="30%" cy="107%" r="150%">
+                  <stop offset="0%" stop-color="#fdf497" />
+                  <stop offset="45%" stop-color="#fd5949" />
+                  <stop offset="60%" stop-color="#d6249f" />
+                  <stop offset="90%" stop-color="#285AEB" />
+                </radialGradient>
+              </defs>
+              <path
+                fill="url(#ig2)"
+                d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"
+              />
+            </svg>
+          </a>
+        </div>
+      </footer>
+
+      <!-- TOAST -->
+      <div class="toast" id="toast">
+        <div class="toast-icon">
+          <svg
+            viewBox="0 0 11 11"
+            fill="none"
+            stroke="white"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <polyline points="1.5,5.5 4.5,8.5 9.5,2.5" />
+          </svg>
+        </div>
+        You're on the list! We'll be in touch soon.
+      </div>
+    </div>
+
+    <script>
+      function handleSubmit() {
+        const input = document.getElementById("emailInput");
+        const btn = document.getElementById("notifyBtn");
+        const msg = document.getElementById("successMsg");
+        const toastEl = document.getElementById("toast");
+        const val = input.value.trim();
+        if (!val || !val.includes("@")) {
+          input.style.borderColor = "#e24b4a";
+          input.style.boxShadow = "0 0 0 4px rgba(226,75,74,0.1)";
+          setTimeout(() => {
+            input.style.borderColor = "";
+            input.style.boxShadow = "";
+          }, 1800);
+          return;
+        }
+        fetch("/waitlist", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email: val }),
+        })
+          .then((r) => r.json())
+          .then((data) => {
+            if (data.ok) {
+              if (data.duplicate) {
+                msg.textContent =
+                  "You're already on the list! We'll reach out soon.";
+                toastEl.lastChild.textContent = "You're already on the list!";
+              } else {
+                msg.textContent = "You're on the list! We'll reach out soon.";
+                toastEl.lastChild.textContent =
+                  "You're on the list! We'll be in touch soon.";
+              }
+              input.style.display = "none";
+              btn.style.display = "none";
+              msg.style.display = "block";
+              showToast();
+              fetchCount();
+            }
+          });
+      }
+
+      function fetchCount() {
+        fetch("/waitlist/count")
+          .then((r) => r.json())
+          .then((data) => animateCounterTo(data.count));
+      }
+
+      function showToast() {
+        const toast = document.getElementById("toast");
+        toast.classList.add("show");
+        setTimeout(() => toast.classList.remove("show"), 3500);
+      }
+
+      function animateCounterTo(target) {
+        const el = document.getElementById("c1");
+        const current = parseInt(el.textContent) || 0;
+        const diff = target - current;
+        if (diff <= 0) return;
+        const steps = 40;
+        const step = Math.ceil(diff / steps);
+        let count = current;
+        const interval = setInterval(() => {
+          count = Math.min(count + step, target);
+          el.textContent = count;
+          if (count >= target) clearInterval(interval);
+        }, 30);
+      }
+
+      window.addEventListener("load", fetchCount);
+    </script>
+  </body>
 </html>
