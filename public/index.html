@@ -314,6 +314,15 @@
         animation: fadeUp 0.4s ease both;
       }
 
+      .error-msg {
+        font-size: 0.82rem;
+        color: #e24b4a;
+        font-weight: 500;
+        display: none;
+        animation: fadeUp 0.3s ease both;
+        margin-top: 2px;
+      }
+
       /* ── FEATURE STRIP ── */
       .features {
         display: flex;
@@ -669,6 +678,7 @@
           </button>
         </div>
         <p class="success-msg" id="successMsg"></p>
+        <p class="error-msg" id="errorMsg"></p>
 
         <!-- Counter row -->
         <div class="counter-row">
@@ -826,15 +836,29 @@
         const input = document.getElementById("emailInput");
         const btn = document.getElementById("notifyBtn");
         const msg = document.getElementById("successMsg");
+        const errorMsg = document.getElementById("errorMsg");
         const toastEl = document.getElementById("toast");
         const val = input.value.trim();
-        if (!val || !val.includes("@")) {
-          input.style.borderColor = "#e24b4a";
-          input.style.boxShadow = "0 0 0 4px rgba(226,75,74,0.1)";
-          setTimeout(() => {
-            input.style.borderColor = "";
-            input.style.boxShadow = "";
-          }, 1800);
+
+        // Reset previous error state
+        errorMsg.style.display = "none";
+        errorMsg.textContent = "";
+        input.style.borderColor = "";
+        input.style.boxShadow = "";
+
+        const emailRegex = /^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$/;
+
+        if (!val) {
+          showError(input, errorMsg, "Please enter your email address.");
+          return;
+        }
+
+        if (!emailRegex.test(val)) {
+          showError(
+            input,
+            errorMsg,
+            "Please enter a valid email address (e.g. name@example.com).",
+          );
           return;
         }
         fetch("/waitlist", {
@@ -861,6 +885,17 @@
               fetchCount();
             }
           });
+      }
+
+      function showError(input, errorMsg, message) {
+        input.style.borderColor = "#e24b4a";
+        input.style.boxShadow = "0 0 0 4px rgba(226,75,74,0.1)";
+        errorMsg.textContent = message;
+        errorMsg.style.display = "block";
+        setTimeout(() => {
+          input.style.borderColor = "";
+          input.style.boxShadow = "";
+        }, 3000);
       }
 
       function fetchCount() {
