@@ -56,6 +56,7 @@ jobs:
           script: |
             DEPLOY_DIR="/home/${{ secrets.BD_VPS_USER }}/makuro-coming-soon-production"
             VERSION="${{ env.VERSION }}"
+            CI_IMAGE_NAME="ghcr.io/${{ secrets.GHCR_USERNAME }}/makuro-coming-soon:$VERSION"
 
             echo "Creating and entering deployment directory..."
             mkdir -p "$DEPLOY_DIR"
@@ -72,11 +73,10 @@ jobs:
             NODE_ENV=production
             APP_PORT=${{ secrets.APP_PORT }}
             DATA_DIR=/app/data
-            CI_IMAGE_NAME="${{ env.CI_IMAGE_NAME }}"
             EOF
 
             # Override docker-compose.yml to use the GHCR image
-            sed -i "s|build: \.|image: ${CI_IMAGE_NAME}|g" docker-compose.yml
+            sed -i "s|build: \.|image: $CI_IMAGE_NAME|g" docker-compose.yml
             sed -i '/build:/d' docker-compose.yml
 
             echo "Authenticating with GHCR..."
